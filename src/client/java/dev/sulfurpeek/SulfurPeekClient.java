@@ -30,22 +30,24 @@ public class SulfurPeekClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> {
-            ItemStack held = findHeldBlock(stack);
-            if (held != null && !held.isEmpty()) {
-                // Use the item's real name from its type, never the stack's custom/renamed name.
-                Item real = held.getItem();
-                Identifier realId = BuiltInRegistries.ITEM.getKey(real);
-                lines.add(Component.literal("Contains: ")
-                        .withStyle(s -> s.withColor(0xAAAAAA))
-                        .append(Component.translatable(real.getDescriptionId())
-                                .withStyle(s -> s.withColor(0xE6D84A)))
-                        .append(Component.literal(" (" + realId + ")")
-                                .withStyle(s -> s.withColor(0x777777))));
+            Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            if (!itemId.getPath().contains("sulfur_cube")) return;
+
+            lines.add(Component.literal("[SulfurPeek debug]").withStyle(s -> s.withColor(0xFF55FF)));
+            for (var entry : stack.getComponents()) {
+                Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.type());
+                String v = String.valueOf(entry.value());
+                if (v.length() > 90) v = v.substring(0, 90) + "...";
+                lines.add(Component.literal(key + " = " + v).withStyle(s -> s.withColor(0x55FFFF)));
             }
+            ItemStack held = findHeldBlock(stack);
+            String result = (held == null || held.isEmpty()) ? "nothing found"
+                    : String.valueOf(BuiltInRegistries.ITEM.getKey(held.getItem()));
+            lines.add(Component.literal("SulfurPeek reads: " + result).withStyle(s -> s.withColor(0xFFFF55)));
         });
     }
 
-    private static ItemStack findHeldBlock(ItemStack stack) {
+    public static ItemStack findHeldBlock(ItemStack stack) {
         // 1) Direct component lookup, by id so we don't depend on a compile-time constant name.
         for (var entry : stack.getComponents()) {
             DataComponentType<?> type = entry.type();
