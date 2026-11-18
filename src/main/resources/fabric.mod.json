@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 1,
+	"id": "sulfurpeek",
+	"version": "${version}",
+	"name": "SulfurPeek",
+	"description": "Shows the real block inside a Bucket of Sulfur Cube in item tooltips, ignoring renames.",
+	"license": "CC0-1.0",
+	"environment": "client",
+	"entrypoints": {
+		"main": ["dev.sulfurpeek.SulfurPeek"],
+		"client": ["dev.sulfurpeek.SulfurPeekClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": ">=26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
